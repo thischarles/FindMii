@@ -64,7 +64,6 @@ public class GameManager {
 			
 			boolean tryAgain = true;
 
-//TODO: Add code for "(N)ext Hero"
 			/** Player command entry loop **/
 			while (tryAgain) {
 				System.out.println("(A)ttack or (M)agic or (N)ext Hero: ");
@@ -82,6 +81,14 @@ public class GameManager {
 				else if (command == 'm' || command == 'M') {
 					buff = currentLevel.magic(mii);
 					tryAgain = false;
+				}
+				/** Next Hero **/
+				else if (command == 'n' || command == 'N') {
+					System.out.println(mii.getName() + " goes to the end of the line.");
+					heroes.removeFirst();
+					heroes.addLast(mii);
+					mii = heroes.peekFirst();
+					System.out.println(mii.getName() + " is up.");
 				}
 				else {
 					System.out.println("Invalid command.");
