@@ -3,7 +3,7 @@
  * HP and status is modified using methods that affect damage. Any status changes that may occur is also stored 
  * and changed through this class. Spell damage is calculated here.
  * @author Charles Hwang
- * @version March 7, 2015
+ * @version March 18, 2015
  */
 
 public class Enemy {
@@ -85,7 +85,7 @@ public class Enemy {
 		//weakness (3x)
 		if (weakness != null && weakness == color) {
 			System.out.println("CRITICAL HIT!");
-			System.out.println(color + " spell did " + damage * 3 + " HP of damage.");
+			System.out.println(color + " magic did " + damage * 3 + " HP of damage.");
 			hp = hp - (damage * 3);
 		}
 		//immunity (0)
@@ -95,7 +95,7 @@ public class Enemy {
 		}
 		//normal damage (2x)
 		else {
-			System.out.println(color + " spell did " + damage * 2 + " HP of damage.");
+			System.out.println(color + " magic did " + damage * 2 + " HP of damage.");
 			hp = hp - (damage * 2);
 		}
 	}

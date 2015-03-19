@@ -2,7 +2,7 @@
  * A representation of a Mii in the Find Mii game. They have a name, level, color, a boost, 
  * an accuracy rating, and a critical chance rating.
  * @author Charles Hwang
- * @version March 7, 2015
+ * @version March 18, 2015
  */
 
 public class Mii {
@@ -43,7 +43,6 @@ public class Mii {
 	private Color color;
 	/** Any boosts a Mii may have received. **/
 	private Color boost;
-
 	
 	//Damage calculation ratings
 	/** A Mii's attack accuracy **/
@@ -126,6 +125,31 @@ public class Mii {
 	public void invigorate() {
 		boost = Mii.Color.ORANGE;
 	}
+	
+	/**
+	 * Prints the description of the current hero's buff
+	 */
+	public void boostBlurb() {
+		if (boost != null) {
+			switch (boost) {
+				case PINK:
+					System.out.println("PINK description");
+					break;
+				case ORANGE:
+					System.out.println(name + " has very high morale.");
+					break;
+				case YELLOW:
+					System.out.println("YELLOW description");
+					break;
+				case GREEN:
+					System.out.println("GREEN description");
+					break;
+				default:
+					break;
+			}
+		}
+	}
+
 	
 	/**
 	 * Mii's name

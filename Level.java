@@ -6,7 +6,7 @@ import java.util.Random;
  * A representation of a Level in the Find Mii game. The Level holds a list of enemies, the room's stauts, 
  * and a Random object for random number generation. Attack damage calculations happen here.
  * @author Charles Hwang
- * @version March 7, 2015
+ * @version March 18, 2015
  */
 
 public class Level {
@@ -75,8 +75,8 @@ public class Level {
 	}
 	
 	/**
-	 * Player chooses to cast a spell
-	 * @param hero Mii casting the spell
+	 * Player chooses to cast a magic
+	 * @param hero Mii casting the magic
 	 * @return The Color of any buff spells so that they can be handled by the GameManager
 	 */
 	public Mii.Color magic(Mii hero) {
@@ -145,14 +145,6 @@ public class Level {
 	}
 	
 	/**
-	 * Returns the Enemies list
-	 * @return Enemies list
-	 */
-	public ArrayList<Enemy> getEnemies() {
-		return enemies;
-	}
-	
-	/**
 	 * Changes the Level's status
 	 * @param newStatus the status that Level changes to
 	 */
@@ -168,31 +160,30 @@ public class Level {
 		return enemies.size() == 0;
 	}
 	
-//TODO:	 Mii doesn't have to turn away or run if the enemy is frozen or asleep
 	/**
-	 * 
-	 * @return
+	 * If enemies are asleep or frozen, Mii can keep fighting
+	 * @return false if any enemy is not frozen or asleep, true otherwise
 	 */
 	public boolean canStay() {
-		//if enemies are asleep or frozen return true
-		return false;
+		for (int i = 0; i < enemies.size(); i++) {
+			if (enemies.get(i).getStatus() != Enemy.Status.FROZEN || enemies.get(i).getStatus() != Enemy.Status.FROZEN)
+				return false;
+		}
+		return true;
 	}
 	
-	/** Helper methods **/
-	
 	/**
-	 * Checks the status of the enemies. Used after each time a Mii attacks.
+	 * Checks enemy status effects at the end of turn.
 	 */
-	private void checkEnemies() {
+	public void checkEnemyStatus() {
 		for (int i = 0; i < enemies.size(); i++) {
-			if (enemies.get(i).isDead()) {
-				System.out.println(enemies.get(i).getName() + " is defeated.");
-				enemies.remove(i);
-			}
-//TODO: Status checks happen only once at the end of a turn?
 			if (enemies.get(i).getStatus() == Enemy.Status.POISONED) {
 				System.out.println(enemies.get(i).getName() + " is poisoned.");
 				enemies.get(i).poisonDamage();
+				if (enemies.get(i).isDead()) {
+					System.out.println(enemies.get(i).getName() + " is defeated.");
+					enemies.remove(i);
+				}
 			}
 			if (enemies.get(i).getStatus() == Enemy.Status.FROZEN) {
 				if (rng.nextInt(CHANCE) % 2 == 0) {
@@ -213,12 +204,24 @@ public class Level {
 				}
 			}
 		}
-//
 	}
 	
-//TODO: Should check enemies after damage?
+	/** Helper methods **/
+	
 	/**
-	 * For handling the two spells that only damage enemies, Blue and Red.
+	 * Checks the status of the enemies. Used after each time a Mii attacks.
+	 */
+	private void checkEnemies() {
+		for (int i = 0; i < enemies.size(); i++) {
+			if (enemies.get(i).isDead()) {
+				System.out.println(enemies.get(i).getName() + " is defeated.");
+				enemies.remove(i);
+			}
+		}
+	}
+
+	/**
+	 * For handling the two magic spells that only damage enemies, Blue and Red.
 	 * @param hero Mii dealing the damage
 	 */
 	private void damageEnemiesWithMagic(Mii hero) {
@@ -232,10 +235,10 @@ public class Level {
 		}
 		if (hero.getColor() == Mii.Color.BLUE) {
 			if (enemies.size() == 1) {
-				System.out.println("BLUE MAGIC text here " + enemies.get(0).getName());
+				System.out.println("BLUE MAGIC TEXT HERE " + enemies.get(0).getName());
 			}
 			else {
-				System.out.println("BLUE MAGIC text here");
+				System.out.println("BLUE MAGIC TEXT HERE");
 			}
 		}
 		
@@ -243,9 +246,11 @@ public class Level {
 		while (itr.hasNext()) {
 			itr.next().magicDamage(hero.getLevel(), hero.getColor());
 		}
+
+		checkEnemies();
 	}
 	
-//TODO: Feels funning doing attack calculation here while magic calculation is done in Enemy.
+//TODO: Feels funny doing attack calculation here while magic calculation is done in Enemy.
 	/**
 	 * Damage calculator for normal attack. Mii damage is equal to its level.
 	 * That is subtracted from the Enemy. A critical hit does double damage.
@@ -266,5 +271,13 @@ public class Level {
 		System.out.println("Attack misses!");
 		return 0;
 	}
-
+	
+	/**
+	 * Create a print out of the current Enemies and their HP
+	 */
+	public void printEnemies() {
+		for (int i = 1; i <= enemies.size(); i++) {
+			System.out.println(i + ": " + enemies.get(i - 1));
+		}
+	}
 }

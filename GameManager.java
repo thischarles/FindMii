@@ -26,7 +26,7 @@ import java.util.Scanner;
  * The game will also check if the game has been won. The game is won if all levels are cleared. The game is
  * lost if there are no more heroes left to fight.
  * @author Charles Hwang
- * @version March 7, 2015
+ * @version March 18, 2015
  */
 
 public class GameManager {
@@ -56,25 +56,39 @@ public class GameManager {
 			Mii mii = heroes.peekFirst();
 			Level currentLevel = levels.peekFirst();
 
-			/** Hero, their status, enemy status, player entry **/
+			/** Hero, their status, enemy status **/
 			System.out.println(mii.getName() + " is up.");
-			boostBlurb(mii);
+			mii.boostBlurb(); //Will say something if Mii has a boost
 			System.out.println();
-			getEnemyStatus(currentLevel);
-			System.out.println("(A)ttack or (M)agic or (N)ext Hero: ");
-			char command = playerInput.next().charAt(0);
-						
-//TODO: Add loop so that player can cancel from Attack and Magic and choose again
-			/** Attack **/
-			if (command == 'a' || command == 'A') {
-				target = pickTarget(currentLevel);
-				currentLevel.attack(mii, target);
+			currentLevel.printEnemies();
+			
+			boolean tryAgain = true;
+
+//TODO: Add code for "(N)ext Hero"
+			/** Player command entry loop **/
+			while (tryAgain) {
+				System.out.println("(A)ttack or (M)agic or (N)ext Hero: ");
+				char command = playerInput.next().charAt(0);
+				/** Attack **/
+				if (command == 'a' || command == 'A') {
+					target = pickTarget(currentLevel);
+					//Proceed with attack. -1 means attack was cancelled.
+					if (target != -1) {
+						currentLevel.attack(mii, target);
+						tryAgain = false;
+					}
+				}
+				/** Magic **/
+				else if (command == 'm' || command == 'M') {
+					buff = currentLevel.magic(mii);
+					tryAgain = false;
+				}
+				else {
+					System.out.println("Invalid command.");
+					System.out.println("(A)ttack or (M)agic or (N)ext Hero: ");
+					command = playerInput.next().charAt(0);
+				}
 			}
-			/** Magic **/
-			else if (command == 'm' || command == 'M') {
-				buff = currentLevel.magic(mii);
-			}
-//TODO: next hero
 			
 			/** Handle hero boost from magic spell **/
 			if (buff != null) {
@@ -83,12 +97,18 @@ public class GameManager {
 			
 			System.out.println();
 			
-			/** Curernt level cleared. **/
+			currentLevel.checkEnemyStatus();
+			
+			/** Current level cleared. **/
 			if (currentLevel.victory()) {
 				System.out.println("Level cleared!");
 				levels.removeFirst();
 			}
-//TODO: Current hero doesn't leave if enemies are asleep or frozen
+			/** All enemies are frozen or asleep so the hero cant stay for the next turn **/
+			else if (currentLevel.canStay()) {
+				//TODO: Current hero doesn't leave if enemies are asleep or frozen
+				System.out.println(mii.getName() + " stands and fights.");
+			}
 			/** Level not cleared. Current hero leaves. Next hero up. **/
 			else {
 				System.out.println(mii.getName() + " gets tired and turns back.");
@@ -112,24 +132,26 @@ public class GameManager {
 		}
 	}
 	
-//TODO: change currentLevel to just straight Enemies list?
-//TODO: add option for player to be able to cancel attack
 	/**
 	 * Helper method for the player to choose a target for their attack.
 	 * @param currentLevel Used to get the list of enemies in the current level
-	 * @return the Index of the Enemy that will be attacked in Level.
+	 * @return the Index of the Enemy that will be attacked in Level. -1 if player is cancelling attack.
 	 */
 	private static int pickTarget(Level currentLevel) {
 		int targets = currentLevel.getChoices();
 		Scanner playerInput = new Scanner(System.in);
-		
-		System.out.println("Attack which enemy?:");
+
+		System.out.println("Attack which enemy? Enter 0 to cancel:");
 
 		boolean tryAgain = true;
 		int target = -1;
 		while (tryAgain) {
 			target = playerInput.nextInt();
-			if (target >= 1 && target <= targets) {
+			if (target == 0) {
+				tryAgain = false;
+				System.out.println("Attack cancelled.");
+			}
+			else if (target >= 1 && target <= targets) {
 				tryAgain = false;
 			}
 			else {
@@ -140,41 +162,7 @@ public class GameManager {
 		return target - 1;
 	}
 	
-//TODO: Probably can be in Level class.
-	/**
-	 * Helper method for creating a print out of the current Enemies and their HP
-	 * @param currentLevel the current Level
-	 */
-	private static void getEnemyStatus(Level currentLevel) {
-		for (int i = 1; i <= currentLevel.getChoices(); i++) {
-			System.out.println(i + ": " + currentLevel.getEnemies().get(i - 1));
-		}
-	}
-	
-//TODO: Probably can be in Mii class.
-	/**
-	 * Helper method for getting a description of the current hero's buff
-	 * @param hero
-	 */
-	private static void boostBlurb(Mii hero) {
-		if (hero.getBoost() != null) {
-			switch (hero.getBoost()) {
-				case PINK:
-					System.out.println("PINK description");
-					break;
-				case ORANGE:
-					System.out.println(hero.getName() + " has very high morale.");
-					break;
-				case YELLOW:
-					System.out.println("YELLOW description");
-					break;
-				case GREEN:
-					System.out.println("GREEN description");
-					break;
-			}
-		}
-	}
-	
+//TODO: Probably can be in Mii class. Maybe not...
 	/**
 	 * Helper method for handling any boosts from magic spells.
 	 * @param buff Spell color. Precondition: buff is not null
@@ -206,9 +194,11 @@ public class GameManager {
 				}
 				break;	
 			case BROWN:
-				//Need a create a random Mii function
+				//TODO: Need a create a random Mii function
 				Mii summonedHero = new Mii("Wandering hero", 5, Mii.Color.PINK);
 				heroes.addFirst(summonedHero);
+				break;
+			default:
 				break;
 		}
 	}
