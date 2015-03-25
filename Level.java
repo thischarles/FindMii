@@ -6,7 +6,7 @@ import java.util.Random;
  * A representation of a Level in the Find Mii game. The Level holds a list of enemies, the room's stauts, 
  * and a Random object for random number generation. Attack damage calculations happen here.
  * @author Charles Hwang
- * @version March 18, 2015
+ * @version March 24, 2015
  */
 
 public class Level {
@@ -36,9 +36,8 @@ public class Level {
 		enemies.add(new Enemy(Enemy.Type.GHOST));
 	}
 
-//TODO: Do Mii's attack the next available Enemy when it kills an Enemy?
 	/**
-	 * Player chooses to attack
+	 * Player chooses to attack.
 	 * @param hero Mii doing the attacking
 	 * @param choice Targeting Enemy at position in the list
 	 */
@@ -46,36 +45,36 @@ public class Level {
 		//Mii's attack three times
 		System.out.println(hero.getName() + " attacks.");
 		enemies.get(choice).damage(damageCalculator(hero));
-		checkEnemies();
 		System.out.println();
 
-		if (!enemies.isEmpty()) {
+		if (!enemies.get(choice).isDead()) {
 			System.out.println("And attacks again.");
 			enemies.get(choice).damage(damageCalculator(hero));		
-			checkEnemies();
 			System.out.println();
-		}
-		
-		if (!enemies.isEmpty()) {
-			System.out.println("And attacks once more.");
-			enemies.get(choice).damage(damageCalculator(hero));
-			checkEnemies();
-			System.out.println();
-		}
-		
-		//Handle orange/invigorated
-		if (!enemies.isEmpty()) {
-			if (hero.getBoost() == Mii.Color.ORANGE) {
-				System.out.println("Your hero gets a bonus attack!");
+
+			if (!enemies.get(choice).isDead()) {
+				System.out.println("And attacks once more.");
 				enemies.get(choice).damage(damageCalculator(hero));
-				checkEnemies();
 				System.out.println();
+				
+				//Handle orange/invigorated
+				if (!enemies.get(choice).isDead()) {
+					if (hero.getBoost() == Mii.Color.ORANGE) {
+						System.out.println("Your hero gets a bonus attack!");
+						enemies.get(choice).damage(damageCalculator(hero));
+						System.out.println();
+					}
+				}
 			}
+		}
+		
+		if (enemies.get(choice).isDead()) {
+			System.out.println(enemies.get(choice).getName() + " is defeated.");
 		}
 	}
 	
 	/**
-	 * Player chooses to cast a magic
+	 * Player chooses to cast a magic spell
 	 * @param hero Mii casting the magic
 	 * @return The Color of any buff spells so that they can be handled by the GameManager
 	 */
@@ -165,9 +164,12 @@ public class Level {
 	 * @return false if any enemy is not frozen or asleep, true otherwise
 	 */
 	public boolean canStay() {
-		for (int i = 0; i < enemies.size(); i++) {
-			if (enemies.get(i).getStatus() != Enemy.Status.FROZEN || enemies.get(i).getStatus() != Enemy.Status.FROZEN)
+		Iterator<Enemy> iterator = enemies.iterator();
+		while (iterator.hasNext()) {
+			Enemy enemy = iterator.next();
+			if (enemy.getStatus() != Enemy.Status.FROZEN || enemy.getStatus() != Enemy.Status.FROZEN) {
 				return false;
+			}
 		}
 		return true;
 	}
@@ -176,50 +178,65 @@ public class Level {
 	 * Checks enemy status effects at the end of turn.
 	 */
 	public void checkEnemyStatus() {
-		for (int i = 0; i < enemies.size(); i++) {
-			if (enemies.get(i).getStatus() == Enemy.Status.POISONED) {
-				System.out.println(enemies.get(i).getName() + " is poisoned.");
-				enemies.get(i).poisonDamage();
-				if (enemies.get(i).isDead()) {
-					System.out.println(enemies.get(i).getName() + " is defeated.");
-					enemies.remove(i);
+		Iterator<Enemy> iterator = enemies.iterator();
+		while (iterator.hasNext()) {
+			Enemy enemy = iterator.next();
+			if (enemy.getStatus() == Enemy.Status.POISONED) {
+				System.out.println(enemy.getName() + " is poisoned.");
+				enemy.poisonDamage();
+				if (enemy.isDead()) {
+					System.out.println(enemy.getName() + " is defeated.");
 				}
 			}
-			if (enemies.get(i).getStatus() == Enemy.Status.FROZEN) {
+			if (enemy.getStatus() == Enemy.Status.FROZEN) {
 				if (rng.nextInt(CHANCE) % 2 == 0) {
-					System.out.println(enemies.get(i).getName() + " is able to move again.");
-					enemies.get(i).changeStatus(null);
+					System.out.println(enemy.getName() + " is able to move again.");
+					enemy.changeStatus(null);
 				}
 				else {
-					System.out.println(enemies.get(i).getName() + " is frozen and cannot move.");
+					System.out.println(enemy.getName() + " is frozen and cannot move.");
 				}
 			}
-			if (enemies.get(i).getStatus() == Enemy.Status.ASLEEP) {
+			if (enemy.getStatus() == Enemy.Status.ASLEEP) {
 				if (rng.nextInt(CHANCE) % 2 == 0) {
-					System.out.println(enemies.get(i).getName() + " woke up.");
-					enemies.get(i).changeStatus(null);
+					System.out.println(enemy.getName() + " woke up.");
+					enemy.changeStatus(null);
 				}
 				else {
-					System.out.println(enemies.get(i).getName() + " is still asleep.");
+					System.out.println(enemy.getName() + " is still asleep.");
 				}
 			}
 		}
 	}
-	
-	/** Helper methods **/
 	
 	/**
-	 * Checks the status of the enemies. Used after each time a Mii attacks.
+	 * Create a print out of the current Enemies and their HP
 	 */
-	private void checkEnemies() {
-		for (int i = 0; i < enemies.size(); i++) {
-			if (enemies.get(i).isDead()) {
-				System.out.println(enemies.get(i).getName() + " is defeated.");
-				enemies.remove(i);
+	public void printEnemies() {
+		for (int i = 1; i <= enemies.size(); i++) {
+			System.out.println(i + ": " + enemies.get(i - 1));
+		}
+	}
+	
+	/**
+	 * Removes Enemies that are considered dead (isDead()). Called at the end of turns.
+	 */
+	public void enemyGarbageCollection() {
+		Iterator<Enemy> iterator = enemies.iterator();
+		while(iterator.hasNext()) {
+			Enemy enemy = iterator.next();
+			if (enemy.isDead()) {
+				iterator.remove();
 			}
 		}
 	}
-
+	
+	/**
+	 *
+	 * --- Helper methods ---
+	 *
+	 **/
+	
 	/**
 	 * For handling the two magic spells that only damage enemies, Blue and Red.
 	 * @param hero Mii dealing the damage
@@ -241,13 +258,15 @@ public class Level {
 				System.out.println("BLUE MAGIC TEXT HERE");
 			}
 		}
-		
+//TODO: Enemy dead dialog
 		Iterator<Enemy> itr = enemies.iterator();
 		while (itr.hasNext()) {
-			itr.next().magicDamage(hero.getLevel(), hero.getColor());
+			Enemy enemy = itr.next();
+			enemy.magicDamage(hero.getLevel(), hero.getColor());
+			if (enemy.isDead()) {
+				System.out.println(enemy.getName() + " is defeated.");
+			}
 		}
-
-		checkEnemies();
 	}
 	
 //TODO: Feels funny doing attack calculation here while magic calculation is done in Enemy.
@@ -270,14 +289,5 @@ public class Level {
 		}
 		System.out.println("Attack misses!");
 		return 0;
-	}
-	
-	/**
-	 * Create a print out of the current Enemies and their HP
-	 */
-	public void printEnemies() {
-		for (int i = 1; i <= enemies.size(); i++) {
-			System.out.println(i + ": " + enemies.get(i - 1));
-		}
-	}
+	}	
 }

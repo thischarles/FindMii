@@ -26,7 +26,7 @@ import java.util.Scanner;
  * The game will also check if the game has been won. The game is won if all levels are cleared. The game is
  * lost if there are no more heroes left to fight.
  * @author Charles Hwang
- * @version March 18, 2015
+ * @version March 24, 2015
  */
 
 public class GameManager {
@@ -105,6 +105,7 @@ public class GameManager {
 			System.out.println();
 			
 			currentLevel.checkEnemyStatus();
+			currentLevel.enemyGarbageCollection();
 			
 			/** Current level cleared. **/
 			if (currentLevel.victory()) {
@@ -113,7 +114,7 @@ public class GameManager {
 			}
 			/** All enemies are frozen or asleep so the hero cant stay for the next turn **/
 			else if (currentLevel.canStay()) {
-				//TODO: Current hero doesn't leave if enemies are asleep or frozen
+//TODO: Current hero doesn't leave if enemies are asleep or frozen. Is the dialogue right?
 				System.out.println(mii.getName() + " stands and fights.");
 			}
 			/** Level not cleared. Current hero leaves. Next hero up. **/
@@ -193,7 +194,7 @@ public class GameManager {
 				}
 				break;
 			case YELLOW:
-				
+//TODO: YELLOW MAGIC
 				break;
 			case GREEN:
 				if (!heroes.isEmpty()) {
@@ -201,7 +202,7 @@ public class GameManager {
 				}
 				break;	
 			case BROWN:
-				//TODO: Need a create a random Mii function
+//TODO: Need a create a random Mii function
 				Mii summonedHero = new Mii("Wandering hero", 5, Mii.Color.PINK);
 				heroes.addFirst(summonedHero);
 				break;
