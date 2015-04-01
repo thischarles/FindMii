@@ -177,7 +177,6 @@ public class GameManager {
 		return target - 1;
 	}
 	
-//TODO: Probably can be in Mii class. Maybe not...
 	/**
 	 * Helper method for handling any boosts from magic spells.
 	 * @param buff Spell color. Precondition: buff is not null
@@ -209,12 +208,11 @@ public class GameManager {
 				}
 				break;	
 			case BROWN:
-//TODO: Need a create a random Mii function
-				Mii summonedHero = new Mii("Wandering hero", 5, Mii.Color.PINK);
+				Mii summonedHero = new Mii();
 				heroes.addFirst(summonedHero);
 				break;
 			default:
 				break;
 		}
-	}
+	}	
 }

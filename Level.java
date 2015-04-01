@@ -252,7 +252,7 @@ public class Level {
 				System.out.println("BLUE MAGIC TEXT HERE");
 			}
 		}
-//TODO: Enemy dead dialog
+//TODO: Enemy dead dialog needs to be verified
 		Iterator<Enemy> itr = enemies.iterator();
 		while (itr.hasNext()) {
 			Enemy enemy = itr.next();

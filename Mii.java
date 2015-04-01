@@ -2,7 +2,7 @@
  * A representation of a Mii in the Find Mii game. They have a name, level, color, a boost, 
  * an accuracy rating, and a critical chance rating.
  * @author Charles Hwang
- * @version March 18, 2015
+ * @version March 31, 2015
  */
 
 public class Mii {
@@ -51,6 +51,24 @@ public class Mii {
 	private int criticalChance;
 	
 	/**
+	 * A Mii constructor for creating a random hero. Also doubles as the default constructor!
+	 */
+	public Mii() {
+		//if I make colorSpin() static, it can be done
+		//this("A wandering hero", GameManager.rng.nextInt(7) + 1, colorSpin(GameManager.rng.nextInt(12)));
+		int colorRoll = GameManager.rng.nextInt(12);
+		Color randomColor = colorSpin(colorRoll);
+		
+		name = "A wandering hero";
+		level = GameManager.rng.nextInt(7) + 1;
+		currentLevel = level;
+		color = randomColor;
+		boost = null;
+		criticalChance = 3;
+		accuracy = 7;
+	}
+	
+	/**
 	 * A Mii constructor. Has critical chance of 3 and accuracy of 7 by default.
 	 * @param name Mii's name
 	 * @param level Mii's level
@@ -65,7 +83,7 @@ public class Mii {
 		criticalChance = 3;
 		accuracy = 7;
 	}
-		
+			
 	/**
 	 * Level of the Mii
 	 * @return Mii's level
@@ -173,5 +191,41 @@ public class Mii {
 	 */
 	public Color getBoost() {
 		return boost;
+	}
+	
+	/**
+	 * Helper method for determining a color when given a random number
+	 * @param value the random number
+	 * @return the Color associated with that number
+	 */
+	private Color colorSpin(int value) {
+		switch (value) {
+			case 0:
+				return Color.RED;
+			case 1:
+				return Color.PINK;
+			case 2:
+				return Color.ORANGE;
+			case 3:
+				return Color.YELLOW;
+			case 4:
+				return Color.LBLUE;
+			case 5:
+				return Color.BLUE;
+			case 6:
+				return Color.LGREEN;
+			case 7:
+				return Color.GREEN;
+			case 8:
+				return Color.PURPLE;
+			case 9:
+				return Color.BROWN;
+			case 10:
+				return Color.WHITE;
+			case 11:
+				return Color.BLACK;
+			default:
+				return null;
+		}
 	}
 }
