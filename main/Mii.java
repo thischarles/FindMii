@@ -1,3 +1,4 @@
+package main;
 /**
  * A representation of a Mii in the Find Mii game. They have a name, level, color, a boost, 
  * an accuracy rating, and a critical chance rating.
@@ -85,11 +86,11 @@ public class Mii {
 	}
 			
 	/**
-	 * Level of the Mii
+	 * Current level of the Mii (which is modifiable and the effective level after boosts)
 	 * @return Mii's level
 	 */
 	public int getLevel() {
-		return level;
+		return currentLevel;
 	}
 
 	/**
@@ -115,6 +116,7 @@ public class Mii {
 		criticalChance = 3;
 		accuracy = 7;
 		currentLevel = level;
+		boost = null;
 	}
 	
 	/**
@@ -124,6 +126,7 @@ public class Mii {
 	public void makeDaring() {
 		criticalChance = 10;
 		accuracy = 1;
+		boost = Color.PINK;
 	}
 	
 	/**
@@ -134,16 +137,26 @@ public class Mii {
 		currentLevel = level * 2;
 		if (currentLevel > 7)
 			currentLevel = 7;
+		boost = Color.GREEN;
 	}
 	
 	/**
-	 * The effect of a Green spell boost. Makes a Mii strengthened.
-	 * Critical chance is at max. Accuracy is at its lowest.
+	 * The effect of a Orange spell boost. Makes a Mii invigorated.
+	 * Gives a Mii an extra attack.
 	 */
-	public void invigorate() {
-		boost = Mii.Color.ORANGE;
+	public void makeInvigorated() {
+		boost = Color.ORANGE;
 	}
 	
+	/**
+	 * Checks the Mii's invigorated status
+	 * @return true if the Mii is invigorated, false otherwise
+	 */
+	public boolean isInvigorated() {
+		return boost == Color.ORANGE;
+	}
+
+	//TOOD: Boost dialogue
 	/**
 	 * Prints the description of the current hero's buff
 	 */
@@ -168,7 +181,6 @@ public class Mii {
 		}
 	}
 
-	
 	/**
 	 * Mii's name
 	 * @return Mii's name
@@ -184,15 +196,7 @@ public class Mii {
 	public Color getColor() {
 		return color;
 	}
-	
-	/**
-	 * Mii's boost
-	 * @return Mii's boost
-	 */
-	public Color getBoost() {
-		return boost;
-	}
-	
+
 	/**
 	 * Helper method for determining a color when given a random number
 	 * @param value the random number

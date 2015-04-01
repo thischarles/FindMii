@@ -1,3 +1,4 @@
+package main;
 import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.Random;
@@ -195,7 +196,7 @@ public class GameManager {
 				if (!heroes.isEmpty()) {
 					Iterator<Mii> itr = heroes.iterator();
 					while (itr.hasNext()) {
-						itr.next().invigorate();
+						itr.next().makeInvigorated();
 					}
 				}
 				break;

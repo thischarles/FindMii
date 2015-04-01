@@ -1,3 +1,4 @@
+package main;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -53,7 +54,7 @@ public class Level {
 				
 				//Handle orange/invigorated
 				if (!enemies.get(choice).isDead()) {
-					if (hero.getBoost() == Mii.Color.ORANGE) {
+					if (hero.isInvigorated()) {
 						System.out.println("Your hero gets a bonus attack!");
 						enemies.get(choice).attackDamage(hero);
 						System.out.println();

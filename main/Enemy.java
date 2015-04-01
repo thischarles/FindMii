@@ -1,3 +1,4 @@
+package main;
 /**
  * A representation of an Enemy in the Find Mii game. They have a type, an HP counter, a weakness, and a status.
  * HP and status is modified using methods that affect damage. Any status changes that may occur is also stored 
