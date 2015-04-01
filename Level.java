@@ -1,12 +1,11 @@
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Random;
 
 /**
  * A representation of a Level in the Find Mii game. The Level holds a list of enemies, the room's stauts, 
  * and a Random object for random number generation. Attack damage calculations happen here.
  * @author Charles Hwang
- * @version March 24, 2015
+ * @version March 31, 2015
  */
 
 public class Level {
@@ -16,16 +15,11 @@ public class Level {
 		DARK,
 		BRIGHT;
 	}
-	
-	/** The seed for the random number generator **/
-	private final int CHANCE = 10;
-	
+		
 	/** Enemies of this Level **/
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();
 	/** The level is dark, bright, or not **/
 	private Status levelStatus;
-	/** Random number generator for damage calculations and if status effects have worn off **/
-	private Random rng = new Random();
 	
 	/**
 	 * Creates Enemies and put them in the list of Enemies
@@ -44,24 +38,24 @@ public class Level {
 	public void attack(Mii hero, int choice) {
 		//Mii's attack three times
 		System.out.println(hero.getName() + " attacks.");
-		enemies.get(choice).damage(damageCalculator(hero));
+		enemies.get(choice).attackDamage(hero);
 		System.out.println();
 
 		if (!enemies.get(choice).isDead()) {
 			System.out.println("And attacks again.");
-			enemies.get(choice).damage(damageCalculator(hero));		
+			enemies.get(choice).attackDamage(hero);
 			System.out.println();
 
 			if (!enemies.get(choice).isDead()) {
 				System.out.println("And attacks once more.");
-				enemies.get(choice).damage(damageCalculator(hero));
+				enemies.get(choice).attackDamage(hero);
 				System.out.println();
 				
 				//Handle orange/invigorated
 				if (!enemies.get(choice).isDead()) {
 					if (hero.getBoost() == Mii.Color.ORANGE) {
 						System.out.println("Your hero gets a bonus attack!");
-						enemies.get(choice).damage(damageCalculator(hero));
+						enemies.get(choice).attackDamage(hero);
 						System.out.println();
 					}
 				}
@@ -189,7 +183,7 @@ public class Level {
 				}
 			}
 			if (enemy.getStatus() == Enemy.Status.FROZEN) {
-				if (rng.nextInt(CHANCE) % 2 == 0) {
+				if (GameManager.rng.nextInt(GameManager.CHANCE) % 2 == 0) {
 					System.out.println(enemy.getName() + " is able to move again.");
 					enemy.changeStatus(null);
 				}
@@ -198,7 +192,7 @@ public class Level {
 				}
 			}
 			if (enemy.getStatus() == Enemy.Status.ASLEEP) {
-				if (rng.nextInt(CHANCE) % 2 == 0) {
+				if (GameManager.rng.nextInt(GameManager.CHANCE) % 2 == 0) {
 					System.out.println(enemy.getName() + " woke up.");
 					enemy.changeStatus(null);
 				}
@@ -267,27 +261,5 @@ public class Level {
 				System.out.println(enemy.getName() + " is defeated.");
 			}
 		}
-	}
-	
-//TODO: Feels funny doing attack calculation here while magic calculation is done in Enemy.
-	/**
-	 * Damage calculator for normal attack. Mii damage is equal to its level.
-	 * That is subtracted from the Enemy. A critical hit does double damage.
-	 * An attack that misses because of inaccuracy does no damage.
-	 * @param hero Mii doing the damage
-	 * @return the amount of damage the hero has done
-	 */
-	private int damageCalculator(Mii hero) {
-		if (rng.nextInt(CHANCE) <= hero.getAccuracy()) {
-			if (rng.nextInt(CHANCE) <= hero.getCriticalChance()) {
-				System.out.println("CRITICAL HIT!");
-				System.out.println("Attack does " + hero.getLevel() * 2 + " damage.");
-				return hero.getLevel() * 2;
-			}
-			System.out.println("Attack does " + hero.getLevel() + " damage.");
-			return hero.getLevel(); 
-		}
-		System.out.println("Attack misses!");
-		return 0;
 	}	
 }

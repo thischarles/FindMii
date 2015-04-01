@@ -1,5 +1,6 @@
 import java.util.ArrayDeque;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Scanner;
 
 /* 
@@ -26,7 +27,7 @@ import java.util.Scanner;
  * The game will also check if the game has been won. The game is won if all levels are cleared. The game is
  * lost if there are no more heroes left to fight.
  * @author Charles Hwang
- * @version March 24, 2015
+ * @version March 31, 2015
  */
 
 public class GameManager {
@@ -36,6 +37,12 @@ public class GameManager {
 	/** A queue of Level objects which are the Levels of Find Mii **/
 	static ArrayDeque<Level> levels = new ArrayDeque<Level>();
 
+	/** The seed for the random number generator **/
+	static final int CHANCE = 10;
+
+	/** Random number generator for damage calculations and if status effects have worn off **/
+	static Random rng = new Random();
+	
 	public static void main(String[] args) {
 
 		/** Initialize levels and heroes **/

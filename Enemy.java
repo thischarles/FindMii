@@ -3,7 +3,7 @@
  * HP and status is modified using methods that affect damage. Any status changes that may occur is also stored 
  * and changed through this class. Spell damage is calculated here.
  * @author Charles Hwang
- * @version March 18, 2015
+ * @version March 31, 2015
  */
 
 public class Enemy {
@@ -59,10 +59,11 @@ public class Enemy {
 	
 	/**
 	 * Damage is decremented for normal attacks.
-	 * @param damage The amount of damage the Enemy took which is also the Mii's level.
+	 * @param hero The hero dealing the damage.
 	 */
-	public void damage(int damage) {
+	public void attackDamage(Mii hero) {
 		//damage
+		int damage = attackDamageCalculator(hero);
 		if (damage != 0) {
 			System.out.println(type.text + " took " + damage + " HP of damage.");
 	
@@ -72,7 +73,7 @@ public class Enemy {
 		else {
 			System.out.println(type.text + " took NO DAMAGE.");
 		}
-	}
+	}	
 	
 	/**
 	 * Damage is decremented for magic spell attacks. If the Enemy is hit with its weakness,
@@ -149,5 +150,26 @@ public class Enemy {
 	 */
 	public String toString() {
 		return type.text + " - " + hp + " HP.";
+	}
+	
+	/**
+	 * Damage calculator for normal attack. Mii damage is equal to its level.
+	 * That is subtracted from the Enemy. A critical hit does double damage.
+	 * An attack that misses because of inaccuracy does no damage.
+	 * @param hero Mii doing the damage
+	 * @return the amount of damage the hero has done
+	 */
+	private int attackDamageCalculator(Mii hero) {
+		if (GameManager.rng.nextInt(GameManager.CHANCE) <= hero.getAccuracy()) {
+			if (GameManager.rng.nextInt(GameManager.CHANCE) <= hero.getCriticalChance()) {
+				System.out.println("CRITICAL HIT!");
+				System.out.println("Attack does " + hero.getLevel() * 2 + " damage.");
+				return hero.getLevel() * 2;
+			}
+			System.out.println("Attack does " + hero.getLevel() + " damage.");
+			return hero.getLevel(); 
+		}
+		System.out.println("Attack misses!");
+		return 0;
 	}
 }
