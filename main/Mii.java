@@ -3,7 +3,7 @@ package main;
  * A representation of a Mii in the Find Mii game. They have a name, level, color, a boost, 
  * an accuracy rating, and a critical chance rating.
  * @author Charles Hwang
- * @version March 31, 2015
+ * @version April 3, 2015
  */
 
 public class Mii {
@@ -156,11 +156,12 @@ public class Mii {
 		return boost == Color.ORANGE;
 	}
 
-	//TOOD: Boost dialogue
+//TOOD: Boost dialogue
 	/**
 	 * Prints the description of the current hero's buff
+	 * @return the color of the spell buff the Mii currently is affected by
 	 */
-	public void boostBlurb() {
+	public Color boostBlurb() {
 		if (boost != null) {
 			switch (boost) {
 				case PINK:
@@ -179,6 +180,7 @@ public class Mii {
 					break;
 			}
 		}
+		return boost;
 	}
 
 	/**
